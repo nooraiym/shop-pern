@@ -1,7 +1,7 @@
-const { Device, DeviceInfo } = require('../models/models')
-const ApiError = require('../error/ApiError')
 const uuid = require('uuid')
 const path = require('path')
+const { Device, DeviceInfo } = require('../models/models')
+const ApiError = require('../error/ApiError')
 
 class DeviceController {
   async create(req, res, next) {
@@ -30,10 +30,11 @@ class DeviceController {
       }
 
       return res.json(device)
-    } catch (error) {
-      next(ApiError.badRequest(error.message))
+    } catch (e) {
+      next(ApiError.badRequest(e.message))
     }
   }
+
   async getAll(req, res) {
     let { brandId, typeId, limit, page } = req.query
     page = page || 1
@@ -59,13 +60,14 @@ class DeviceController {
     }
     if (brandId && typeId) {
       devices = await Device.findAndCountAll({
-        where: { brandId, typeId },
+        where: { typeId, brandId },
         limit,
         offset,
       })
     }
     return res.json(devices)
   }
+
   async getOne(req, res) {
     const { id } = req.params
     const device = await Device.findOne({
